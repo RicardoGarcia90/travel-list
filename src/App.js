@@ -5,6 +5,15 @@ const initialItems = [
   { id: 1, description: 'Passports', quantity: 2, packed: false },
   { id: 2, description: 'Socks', quantity: 12, packed: false },
   { id: 3, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
+  { id: 4, description: 'Charger', quantity: 1, packed: true },
 ];
 
 export default function App() {
@@ -41,23 +50,25 @@ function Form() {
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>O que você precisa ou quer fazer em sua viagem?</h3>
-      <select
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-      >
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-          <option value={num} key={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Item..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button>+</button>
+      <div className="add-form--inputs">
+        <select
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+        >
+          {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+            <option value={num} key={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          placeholder="Item..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <button>+</button>
+      </div>
     </form>
   );
 }
