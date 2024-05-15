@@ -12,12 +12,24 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList items={items} onDeleteItem={handleDeleteItems} />
-      <Stats />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItems}
+        onToggleItem={handleToggleItem}
+      />
+      <Stats items={items} />
     </div>
   );
 }
@@ -28,36 +40,24 @@ function Logo() {
 
 function Form({ onAddItems }) {
   const [description, setDescription] = useState('');
-  const [quantity, setQuantity] = useState(1);
 
   function handleSubmit(e) {
     e.preventDefault();
 
     if (!description) return;
 
-    const newItem = { description, quantity, packed: false, id: Date.now() };
+    const newItem = { description, packed: false, id: Date.now() };
     console.log(newItem);
 
     onAddItems(newItem);
 
     setDescription('');
-    setQuantity(1);
   }
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
-      <h3>O que você precisa ou quer fazer em sua viagem?</h3>
+      <h3>O que você precisa fazer antes de viajar?</h3>
       <div className="add-form--inputs">
-        <select
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-        >
-          {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-            <option value={num} key={num}>
-              {num}
-            </option>
-          ))}
-        </select>
         <input
           type="text"
           placeholder="Item..."
@@ -70,33 +70,63 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items, onDeleteItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem }) {
+  if (!items.length) return '';
+
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItem={onDeleteItem}
+            onToggleItem={onToggleItem}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ item, onDeleteItem }) {
+function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => onToggleItem(item.id)}
+      />
       <span style={item.packed ? { textDecoration: 'line-through' } : {}}>
-        {item.quantity} {item.description}
+        {item.description}
       </span>
       <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
 
-function Stats() {
+function Stats({ items }) {
+  if (!items.length)
+    return (
+      <p className="stats">
+        <em>
+          Adicione na lista o que não pode faltar para realizar sua viagem
+        </em>
+      </p>
+    );
+
+  const numItems = items.length;
+  const numPcked = items.filter((item) => item.packed).length;
+  const percentage = Math.round((numPcked / numItems) * 100);
+
   return (
     <footer className="stats">
-      <em>Você tem X itens na sua lista, e concluiu X (X%)</em>
+      <em>
+        {percentage === 100
+          ? 'Seu checklist está completo! Boa viagem!'
+          : `Você tem ${numItems} itens na sua lista, e concluiu ${numPcked} (
+        ${percentage}%)`}
+      </em>
     </footer>
   );
 }
