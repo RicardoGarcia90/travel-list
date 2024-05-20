@@ -20,6 +20,13 @@ export default function App() {
     );
   }
 
+  function handleClearList(id) {
+    const condirmed = window.confirm(
+      'Tem certeza que quer deletar os itens da lista?'
+    );
+    if (condirmed) setItems([]);
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -28,6 +35,7 @@ export default function App() {
         items={items}
         onDeleteItem={handleDeleteItems}
         onToggleItem={handleToggleItem}
+        onClearList={handleClearList}
       />
       <Stats items={items} />
     </div>
@@ -70,13 +78,29 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items, onDeleteItem, onToggleItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
+  const [sortBy, setSortBy] = useState('input');
+
   if (!items.length) return '';
+
+  let sortedItems;
+
+  if (sortBy === 'input') sortedItems = items;
+
+  if (sortBy === 'description')
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+
+  if (sortBy === 'packed')
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
 
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item
             item={item}
             key={item.id}
@@ -85,6 +109,15 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           />
         ))}
       </ul>
+
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Adicionados recentemente</option>
+          <option value="description">Ordem alfabética</option>
+          <option value="packed">Finalizados por último</option>
+        </select>
+        <button onClick={onClearList}>Limpar lista</button>
+      </div>
     </div>
   );
 }
